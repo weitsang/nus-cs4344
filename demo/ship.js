@@ -131,12 +131,16 @@ function Ship()
 	}
 
 	// c is the HTML canvas context for drawing.
-	this.draw = function(c)
+	this.draw = function(c, isSelf)
 	{
 		try {
 			rx = Math.round(x);
 			ry = Math.round(y);
-			c.fillStyle = "#eee";
+			if (isSelf === true)  {
+				c.fillStyle = "#f00";
+			} else {
+				c.fillStyle = "#eee";
+			}
 			c.beginPath();
 			if (dir == "up") {
 				c.moveTo(rx,ry-5);

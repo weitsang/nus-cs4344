@@ -26,8 +26,15 @@ function Client() {
 					dir = command[2];
 					ships[id].turn(dir);
 				}
+			} else if (command[0] == "delete") {
+				id = command[1];
+				if (ships[id] === undefined) {
+					console.log("error: undefined ship " + id);
+				} else {
+					delete ships[id];
+				}
 			} else {
-					console.log("error: undefined command " + command[0]);
+				console.log("error: undefined command " + command[0]);
 			}
 		};
 
@@ -65,7 +72,11 @@ function Client() {
 
 		// Draw the ship
 		for (i in ships) {
-			ships[i].draw(context);
+			if (ships[i] === myship) {
+				ships[i].draw(context, true);
+			} else {
+				ships[i].draw(context, false);
+			}
 		}
 	}
 }

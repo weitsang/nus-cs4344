@@ -50,7 +50,12 @@ sock.on('connection', function(conn) {
 		} catch (e) { console.log(e.message); }
 	});
 	conn.on('close', function() {
-		  console.log("close")
+		console.log("close" + conn.id);
+		delete ships[conn.id];
+		for (id in ships) {
+			// tell the existing player info about the old ship
+			sockets[id].write("delete " + conn.id);
+		}
 	});
 });
 
