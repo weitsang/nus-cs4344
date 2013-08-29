@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://cdn.sockjs.org/sockjs-0.3.min.js">
+</script>
+	<script type="text/javascript">
+		var global = {}; // For node.js require
+	</script>
+	<!-- Loading the scriptLoader.js, for obvious reasons...-->
+	<script type="text/javascript" src="./scriptLoader.js"></script>
+	<!-- We need to load this here because Pong.js has values which PongClient.js uses-->
+	<script type="text/javascript" src="./Pong.js"></script>
+	<style>
+			body { text-align:center }
+			#serverMsg { text-align:left; font-size: smaller; }
+	</style>
+</head>
+<body onload="loadScript('', 'PongClient.js')">
+	<h1>
+		2-PLAYER PONG
+	</h1>
+	<p>
+		Click the game area to start.
+	</p>
+	<p id="delay">Delay to Server: 0 ms</p>
+	<canvas id ="playArea"></canvas>
+	<p id="serverMsg"></p>
+</body>
+</html>
