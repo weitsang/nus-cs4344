@@ -5,7 +5,7 @@
  * Modified from Davin Choo's AY2012/13 version.
  *
  * Changes from AY2012/13:
- *  - nothing major
+ *  - Added acceleration 
  *
  * Usage: 
  *   require('paddle.js') in both server and client.
@@ -15,17 +15,16 @@
 "use strict"; 
 
 function Paddle(yPos){
-	// Private variables
-	var that;	// pointer to "this"
-
 	// Public variables
 	this.x;		// x-coordinate of paddle's position 
 	this.y;		// y-coordinate of paddle's position
+    this.vx;    // x-velocity of the paddle
 
 	// Constructor
 	var that = this; // Unused in Paddle for now.
 	this.x = Pong.WIDTH/2;
 	this.y = yPos - Paddle.HEIGHT/2;
+    this.vx = 0; // scaling factor is 10
 }
 
 // Static variables
@@ -48,6 +47,26 @@ Paddle.prototype.move = function(newx) {
 		this.x = Pong.WIDTH - Paddle.WIDTH/2;
 	else
 		this.x = newx;
+}
+
+/*
+ * public method: moveOneStep()
+ *
+ * Move the paddle to new x-position by calculating
+ * the velocity.
+ */
+Paddle.prototype.moveOneStep = function() {
+	var newx = this.x + this.vx*10; // 10 is the "scaling factor"
+    this.move(newx);
+}
+
+/*
+ * public method: accelerate(newvx)
+ *
+ * Update the velocity of the paddle.
+ */
+Paddle.prototype.accelerate = function(newvx) {
+	this.vx = newvx;
 }
 
 // For node.js require

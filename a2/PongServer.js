@@ -114,6 +114,11 @@ function PongServer() {
     var gameLoop = function () {
         // Check if ball is moving
         if (ball.isMoving()) {
+
+            // Move paddle (in case accelerometer is used and vx is non-zero).
+            p1.paddle.moveOneStep();
+            p2.paddle.moveOneStep();
+
             // Move ball
             ball.moveOneStep(p1.paddle, p2.paddle);
 
@@ -246,6 +251,14 @@ function PongServer() {
                             },
                             players[conn.id].getDelay());
                             break;
+                            
+                        // one of the player moves the mouse.
+                        case "accelerate":
+                            setTimeout(function() {
+                                players[conn.id].paddle.accelerate(message.vx);
+                            },
+                            players[conn.id].getDelay());
+                            break;
 
                         // one of the player change the delay
                         case "delay":
@@ -263,6 +276,7 @@ function PongServer() {
             var httpServer = http.createServer(app);
             sock.installHandlers(httpServer, {prefix:'/pong'});
             httpServer.listen(Pong.PORT, '0.0.0.0');
+            app.use(express.static(__dirname));
 
         } catch (e) {
             console.log("Cannot listen to " + port);

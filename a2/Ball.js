@@ -123,12 +123,14 @@ function Ball() {
 	if (typeof window === "undefined") {
 		console.log("using process.hrtime()");
 		var getTimestamp = function() { var t = process.hrtime(); return t[0]*1e3 + t[1]*1.0/1e6} 
-	} else if (window.performance.now) {
-		console.log("using window.performence.now()");
-		var getTimestamp = function() { return window.performance.now(); };
-	} else if (window.performance.webkitNow) {
-		console.log("using window.performence.webkitNow()");
-		var getTimestamp = function() { return window.performance.webkitNow(); };
+	} else if (window.performance !== undefined) {
+        if (window.performance.now) {
+            console.log("using window.performence.now()");
+            var getTimestamp = function() { return window.performance.now(); };
+        } else if (window.performance.webkitNow) {
+            console.log("using window.performence.webkitNow()");
+            var getTimestamp = function() { return window.performance.webkitNow(); };
+        }
 	} else {
 		console.log("using Date.now();");
 		var getTimestamp = function() { return new Date().now(); };

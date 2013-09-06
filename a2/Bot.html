@@ -6,16 +6,13 @@
 	<script type="text/javascript">
 		var global = {}; // For node.js require
 	</script>
-	<!-- Loading the scriptLoader.js, for obvious reasons...-->
-	<script type="text/javascript" src="./scriptLoader.js"></script>
-	<!-- We need to load this here because Pong.js has values which PongClient.js uses-->
 	<script type="text/javascript" src="./Pong.js"></script>
 	<style>
 			body { text-align:center }
 			#serverMsg { text-align:left; font-size: smaller; }
 	</style>
 </head>
-<body onload="loadScript('', 'PongBot.js')">
+<body>
 	<h1>
 		PONG BOT
 	</h1>
@@ -26,4 +23,7 @@
 	<canvas id ="playArea"></canvas>
 	<p id="serverMsg"></p>
 </body>
+<script type="text/javascript" src="./Ball.js"></script>
+<script type="text/javascript" src="./Paddle.js"></script>
+<script type="text/javascript" src="./PongBot.js"></script>
 </html>

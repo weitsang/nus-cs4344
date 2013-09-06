@@ -175,14 +175,6 @@ function PongBot() {
     }
 }
 
-// This will auto run after this script is loaded
-
-// Load libraries
-var LIB_PATH = "./";
-//loadScript(lib_path, "Sprites.js");
-loadScript(LIB_PATH, "Ball.js");
-loadScript(LIB_PATH, "Paddle.js");
-
 // Run Client. Give leeway of 0.5 second for libraries to load
 var client = new PongBot();
 setTimeout(function() {client.start();}, 500);

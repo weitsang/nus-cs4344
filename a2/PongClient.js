@@ -23,6 +23,7 @@ function PongClient() {
     var myPaddle;       // player's paddle in game 
     var opponentPaddle; // opponent paddle in game
     var delay;          // delay simulated on current client 
+    var prevVx = 0;     // previous velocity (for accelorometer)
 
     /*
      * private method: showMessage(location, msg)
@@ -128,6 +129,12 @@ function PongClient() {
         document.addEventListener("keydown", function(e) {
             onKeyPress(e);
             }, false);
+        window.addEventListener("devicemotion", function(e) {
+            onDeviceMotion(e);
+            }, false);
+        window.ondevicemotion = function(e) {
+            onDeviceMotion(e);
+            }
     }
 
     /*
@@ -142,11 +149,11 @@ function PongClient() {
         var canvasMaxX = canvasMinX + playArea.width;
         var canvasMinY = playArea.offsetTop;
         var canvasMaxY = canvasMinX + playArea.height;
-        var new_mouseX = e.pageX - canvasMinX;
-        var new_mouseY = e.pageY - canvasMinY;
+        var newMouseX = e.pageX - canvasMinX;
+        var newMouseY = e.pageY - canvasMinY;
 
         // Send event to server
-        sendToServer({type:"move", x: new_mouseX});
+        sendToServer({type:"move", x: newMouseX});
     }
 
     /*
@@ -185,19 +192,28 @@ function PongClient() {
         var canvasMaxX = canvasMinX + playArea.width;
         var canvasMinY = playArea.offsetTop;
         var canvasMaxY = canvasMinX + playArea.height;
-        var new_mouseX = t.pageX - canvasMinX;
-        var new_mouseY = t.pageY - canvasMinY;
+        var newMouseX = t.pageX - canvasMinX;
+        var newMouseY = t.pageY - canvasMinY;
 
         // Send event to server
-        sendToServer({type:"move", x:new_mouseX});
+        sendToServer({type:"move", x:newMouseX});
+    }
+    /*
+     * private method: onDeviceMotion
+     *
+     * Get the device acceleration and use that to change the 
+     * velocity of the paddle.
+     */
+    var onDeviceMotion = function(e) {
+        var vx = e.accelerationIncludingGravity.x;
+        if (vx - prevVx > 0.1 || prevVx - vx > 0.1) {
+            prevVx = vx;
+            // Send event to server if the accelerometer reading 
+            // changes significantly.
+            sendToServer({type: "accelerate", vx: vx});
+        }
     }
 
-    /*
-     * private method: onKeyPress
-     *
-     * Increase or decrease delay based on keyboard
-     * presses.
-     */
     var onKeyPress = function(e) {
         /*
         keyCode represents keyboard button
@@ -249,8 +265,8 @@ function PongClient() {
         context.arc(ball.x, ball.y, Ball.WIDTH, 0, Math.PI*2, true);
         context.closePath();
         context.fill();
-        //context.drawImage(Sprites.ball[0], ball.x - Ball.WIDTH/2, ball.y - Ball.HEIGHT/2, Ball.WIDTH, Ball.HEIGHT);
 
+        // Draw both paddles
         context.fillStyle = "#ffff00";
         context.fillRect(myPaddle.x - Paddle.WIDTH/2, 
             myPaddle.y - Paddle.HEIGHT/2,
@@ -258,9 +274,6 @@ function PongClient() {
         context.fillRect(opponentPaddle.x - Paddle.WIDTH/2, 
             opponentPaddle.y - Paddle.HEIGHT/2,
             Paddle.WIDTH, Paddle.HEIGHT);
-
-        //context.drawImage(Sprites.paddle[0], myPaddle.x - Paddle.WIDTH/2, myPaddle.y - Paddle.HEIGHT/2, Paddle.WIDTH, Paddle.HEIGHT);
-        //context.drawImage(Sprites.paddle[0], opponentPaddle.x - Paddle.WIDTH/2, opponentPaddle.y - Paddle.HEIGHT/2, Paddle.WIDTH, Paddle.HEIGHT);
     }
 
     /*
@@ -287,12 +300,6 @@ function PongClient() {
 }
 
 // This will auto run after this script is loaded
-
-// Load libraries
-var LIB_PATH = "./";
-//loadScript(lib_path, "Sprites.js");
-loadScript(LIB_PATH, "Ball.js");
-loadScript(LIB_PATH, "Paddle.js");
 
 // Run Client. Give leeway of 0.5 second for libraries to load
 var client = new PongClient();
