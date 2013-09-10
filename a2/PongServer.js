@@ -226,8 +226,8 @@ function PongServer() {
                     nextPID = players[conn.id].pid;
 
                     // Remove player who wants to quit/closed the window
-                    if (players[conn.id] === 1) p1 = undefined;
-                    if (players[conn.id] === 2) p2 = undefined;
+                    if (players[conn.id] === p1) p1 = undefined;
+                    if (players[conn.id] === p2) p2 = undefined;
                     delete players[conn.id];
 
                     // Sends to everyone connected to server except the client
