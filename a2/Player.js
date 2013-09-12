@@ -31,7 +31,6 @@ function Player(sid, pid, yPos) {
      * The delay has a random 20% fluctuation.
      */
     this.getDelay = function() {
-        return this.delay;
         var errorPercentage = 20;
         var to = this.delay + errorPercentage*this.delay/100;
         var from = this.delay - errorPercentage*this.delay/100;
