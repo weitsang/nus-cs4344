@@ -262,7 +262,7 @@ function PongClient() {
         // Draw the ball
         context.fillStyle = "#ffffff";
         context.beginPath();
-        context.arc(ball.x, ball.y, Ball.WIDTH, 0, Math.PI*2, true);
+        context.arc(ball.x, ball.y, Ball.WIDTH/2, 0, Math.PI*2, true);
         context.closePath();
         context.fill();
 
@@ -286,8 +286,15 @@ function PongClient() {
     this.start = function() {
         // Initialize game objects
         ball = new Ball();
+
+        // The following lines always put the player's paddle
+        // at the bottom; opponent's paddle at the top.
+        // But this could get overridden by the server later
+        // (by the y coordinate of the paddle).
         myPaddle = new Paddle(Pong.HEIGHT);
         opponentPaddle = new Paddle(Paddle.HEIGHT);
+
+        // Start off with no delay to the server
         delay = 0;
 
         // Initialize network and GUI

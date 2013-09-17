@@ -139,7 +139,7 @@ function PongBot() {
         // Draw the ball
         context.fillStyle = "#ffffff";
         context.beginPath();
-        context.arc(ball.x, ball.y, Ball.WIDTH, 0, Math.PI*2, true);
+        context.arc(ball.x, ball.y, Ball.WIDTH/2, 0, Math.PI*2, true);
         context.closePath();
         context.fill();
 

@@ -138,8 +138,8 @@ function Ball() {
 }
 
 // Static variables
-Ball.WIDTH = 10;
-Ball.HEIGHT = 10;
+Ball.WIDTH = 20;
+Ball.HEIGHT = 20;
 Ball.VERTICAL_VELOCITY = 7;
 
 // For node.js require
