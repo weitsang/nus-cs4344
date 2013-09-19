@@ -117,6 +117,38 @@ function PongBot() {
         playArea = document.getElementById("playArea");
         playArea.height = Pong.HEIGHT;
         playArea.width = Pong.WIDTH;
+
+        document.addEventListener("keydown", function(e) {
+            onKeyPress(e);
+            }, false);
+    }
+
+    var onKeyPress = function(e) {
+        /*
+        keyCode represents keyboard button
+        38: up arrow
+        40: down arrow
+        37: left arrow
+        39: right arrow
+        */
+        switch(e.keyCode) {
+            case 38: { // Up
+                delay += 50;
+                // Send event to server
+                sendToServer({type:"delay", delay:delay});
+                showMessage("delay", "Delay to Server: " + delay + " ms");
+                break;
+            }
+            case 40: { // Down
+                if (delay >= 50) {
+                    delay -= 50;
+                    // Send event to server
+                    sendToServer({type:"delay", delay:delay});
+                    showMessage("delay", "Delay to Server: " + delay + " ms");
+                }
+                break;
+            }
+        }
     }
 
     /*
