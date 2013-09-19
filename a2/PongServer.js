@@ -133,8 +133,7 @@ function PongServer() {
                 myPaddleY: p1.paddle.y,
                 opponentPaddleX: p2.paddle.x,
                 opponentPaddleY: p2.paddle.y};
-            setTimeout(function() { unicast(sockets[1], states); },
-                p1.getDelay());
+            setTimeout(unicast, p1.getDelay(), sockets[1], states);
             states = { 
                 type: "update",
                 ballX: bx,
@@ -143,8 +142,7 @@ function PongServer() {
                 myPaddleY: p2.paddle.y,
                 opponentPaddleX: p1.paddle.x,
                 opponentPaddleY: p1.paddle.y};
-            setTimeout(function() { unicast(sockets[2], states); },
-                p2.getDelay());
+            setTimeout(unicast, p2.getDelay(), sockets[2], states);
         } else {
             // Reset
             reset();
