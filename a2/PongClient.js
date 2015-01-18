@@ -88,7 +88,7 @@ function PongClient() {
                     // Stop updating own's paddle based on server's state
                     // since we are short-circuting the paddle movement.
                     // myPaddle.x = message.myPaddleX;
-                    // myPaddle.y = message.myPaddleY;
+                    myPaddle.y = message.myPaddleY;
                     opponentPaddle.x = message.opponentPaddleX;
                     opponentPaddle.y = message.opponentPaddleY;
                     break;
