@@ -85,8 +85,10 @@ function PongClient() {
                 case "update": 
                     ball.x = message.ballX;
                     ball.y = message.ballY;
-                    myPaddle.x = message.myPaddleX;
-                    myPaddle.y = message.myPaddleY;
+                    // Stop updating own's paddle based on server's state
+                    // since we are short-circuting the paddle movement.
+                    // myPaddle.x = message.myPaddleX;
+                    // myPaddle.y = message.myPaddleY;
                     opponentPaddle.x = message.opponentPaddleX;
                     opponentPaddle.y = message.opponentPaddleY;
                     break;
@@ -151,6 +153,10 @@ function PongClient() {
         var canvasMaxY = canvasMinX + playArea.height;
         var newMouseX = e.pageX - canvasMinX;
         var newMouseY = e.pageY - canvasMinY;
+
+        // Short circuiting the paddle movement.  Move
+        // to new location immediately.
+        myPaddle.x = newMouseX;
 
         // Send event to server
         sendToServer({type:"move", x: newMouseX});
