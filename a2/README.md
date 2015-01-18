@@ -13,13 +13,9 @@ Install ```node.js``` on the server.  Then install ```sockjs``` and ```express``
 To run the server, 
 ```node PongServer.js```
 
-Connects to the server with a modern browser, at the URL
-
-```http://<server>:<port>/Pong.html```
+Connects to the server with a modern browser, at the URL ```http://server:port/Pong.html```
 
 The ```server``` and ```port``` can be configured in ```Pong.js```.
 
-A Bot is provided at the URL
-
-```http://<server>:<port>/Bot.html```
+A Bot is provided at the URL ```http://server:port/Bot.html```
 
