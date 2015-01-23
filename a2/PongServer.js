@@ -275,7 +275,9 @@ function PongServer() {
             sock.installHandlers(httpServer, {prefix:'/pong'});
             httpServer.listen(Pong.PORT, '0.0.0.0');
             app.use(express.static(__dirname));
-
+            console.log("Server running on http://0.0.0.0:" + Pong.PORT + "\n")
+            console.log("Visit http://0.0.0.0:" + Pong.PORT + "/Pong.html in your " + 
+                        "browser to start the game")
         } catch (e) {
             console.log("Cannot listen to " + port);
             console.log("Error: " + e);
