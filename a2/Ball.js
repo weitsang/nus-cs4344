@@ -18,13 +18,13 @@
 function Ball() {
     // Private variables
 	var moving;	// boolean of whether ball is moving
-	var vx;		// x-component of ball's velocity
-	var vy;		// y-component of ball's velocity
 	var lastUpdate; // timestamp of lastUpdate
 
 	// Public variables
 	this.x;		// x-coordinate of ball's position 
 	this.y;		// y-coordinate of ball's position
+	this.vx;	// x-component of ball's velocity
+	this.vy;	// y-component of ball's velocity
 
 	// constructor
 	var that = this;
