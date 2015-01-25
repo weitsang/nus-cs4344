@@ -125,8 +125,11 @@ function PongServer() {
             // Update on player side
             var bx = ball.x;
             var by = ball.y;
+            var date = new Date();
+            var currentTime = date.getTime();
             var states = { 
                 type: "update",
+                timestamp: currentTime,
                 ballX: bx,
                 ballY: by,
                 myPaddleX: p1.paddle.x,
@@ -136,6 +139,7 @@ function PongServer() {
             setTimeout(unicast, p1.getDelay(), sockets[1], states);
             states = { 
                 type: "update",
+                timestamp: currentTime,
                 ballX: bx,
                 ballY: by,
                 myPaddleX: p2.paddle.x,
@@ -236,6 +240,11 @@ function PongServer() {
                 conn.on('data', function (data) {
                     var message = JSON.parse(data)
 
+                    if (players[conn.id] === undefined) {
+                        // we received data from a connection with
+                        // no corresponding player.  don't do anything.
+                        return;
+                    } 
                     switch (message.type) {
                         // one of the player starts the game.
                         case "start": 

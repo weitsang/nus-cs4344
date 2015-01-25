@@ -27,6 +27,7 @@ function PongBot() {
     var myPaddle;       // player's paddle in game 
     var opponentPaddle; // opponent paddle in game
     var delay;          // delay simulated on current client 
+    var latestMessageSendTime = 0; // timestamp of last recv update
 
     /*
      * private method: showMessage(location, msg)
@@ -86,6 +87,10 @@ function PongBot() {
                     appendMessage("serverMsg", message.content);
                     break;
                 case "update": 
+                    var t = message.timestamp;
+                    if (t < latestMessageSendTime)
+                        break;
+                    latestMessageSendTime = t;
                     ball.x = message.ballX;
                     ball.y = message.ballY;
                     myPaddle.x = message.myPaddleX;

@@ -24,6 +24,7 @@ function PongClient() {
     var opponentPaddle; // opponent paddle in game
     var delay;          // delay simulated on current client 
     var prevVx = 0;     // previous velocity (for accelorometer)
+    var latestMessageSendTime = 0; // timestamp of last recv update
 
     /*
      * private method: showMessage(location, msg)
@@ -83,13 +84,14 @@ function PongClient() {
                     appendMessage("serverMsg", message.content);
                     break;
                 case "update": 
+                    var t = message.timestamp;
+                    if (t < latestMessageSendTime)
+                        break;
+                    latestMessageSendTime = t;
                     ball.x = message.ballX;
                     ball.y = message.ballY;
-<<<<<<< Updated upstream
                     // Stop updating own's paddle based on server's state
                     // since we are short-circuting the paddle movement.
-=======
->>>>>>> Stashed changes
                     // myPaddle.x = message.myPaddleX;
                     myPaddle.y = message.myPaddleY;
                     opponentPaddle.x = message.opponentPaddleX;
