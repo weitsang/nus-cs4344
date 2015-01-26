@@ -91,14 +91,27 @@ function PongBot() {
                     if (t < latestMessageSendTime)
                         break;
                     latestMessageSendTime = t;
-                    ball.x = message.ballX;
-                    ball.y = message.ballY;
-                    myPaddle.x = message.myPaddleX;
+                    //ball.x = message.ballX;
+                    //ball.y = message.ballY;
+                    //myPaddle.x = message.myPaddleX;
                     myPaddle.y = message.myPaddleY;
                     opponentPaddle.x = message.opponentPaddleX;
                     opponentPaddle.y = message.opponentPaddleY;
-                    // BOT: automatically moves paddle
-                    sendToServer({type:"move",x:ball.x});
+                    break;
+                case "updateVelocity": 
+                    var t = message.timestamp;
+                    if (t < latestMessageSendTime)
+                        break;
+                    latestMessageSendTime = t;
+                    ball.vx = message.ballVX;
+                    ball.vy = message.ballVY;
+                    break;
+                case "outOfBound": 
+                    var t = message.timestamp;
+                    if (t < latestMessageSendTime)
+                        break;
+                    latestMessageSendTime = t;
+                    ball.reset();
                     break;
                 default: 
                     appendMessage("serverMsg", "unhandled meesage type " + message.type);
@@ -156,6 +169,21 @@ function PongBot() {
         }
     }
 
+    var gameLoop = function() {
+        ball.updatePosition();
+        if (myPaddle.y < Paddle.HEIGHT) {
+            // my paddle is on top
+            ball.checkForBounce(myPaddle, opponentPaddle);
+        } else {
+            // my paddle is at the bottom
+            ball.checkForBounce(opponentPaddle, myPaddle);
+        }
+        // BOT: automatically moves paddle
+        sendToServer({type:"move",x:ball.x});
+        myPaddle.x = ball.x;
+        render();
+    }
+
     /*
      * private method: render
      *
@@ -208,7 +236,7 @@ function PongBot() {
         initGUI();
 
         // Start drawing 
-        setInterval(function() {render();}, 1000/Pong.FRAME_RATE);
+        setInterval(function() {gameLoop();}, 1000/Pong.FRAME_RATE);
     }
 }
 
