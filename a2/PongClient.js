@@ -88,14 +88,29 @@ function PongClient() {
                     if (t < latestMessageSendTime)
                         break;
                     latestMessageSendTime = t;
-                    ball.x = message.ballX;
-                    ball.y = message.ballY;
+                    // ball.x = message.ballX;
+                    // ball.y = message.ballY;
                     // Stop updating own's paddle based on server's state
                     // since we are short-circuting the paddle movement.
                     // myPaddle.x = message.myPaddleX;
                     myPaddle.y = message.myPaddleY;
                     opponentPaddle.x = message.opponentPaddleX;
                     opponentPaddle.y = message.opponentPaddleY;
+                    break;
+                case "updateVelocity": 
+                    var t = message.timestamp;
+                    if (t < latestMessageSendTime)
+                        break;
+                    latestMessageSendTime = t;
+                    ball.vx = message.ballVX;
+                    ball.vy = message.ballVY;
+                    break;
+                case "outOfBound": 
+                    var t = message.timestamp;
+                    if (t < latestMessageSendTime)
+                        break;
+                    latestMessageSendTime = t;
+                    ball.reset();
                     break;
                 default: 
                     appendMessage("serverMsg", "unhandled meesage type " + message.type);
@@ -252,6 +267,19 @@ function PongClient() {
             }
         }
     }
+    
+    var gameLoop = function() {
+        ball.updatePosition();
+        if (myPaddle.y < Paddle.HEIGHT) {
+            // my paddle is on top
+            ball.checkForBounce(myPaddle, opponentPaddle);
+        } else {
+            // my paddle is at the bottom
+            ball.checkForBounce(opponentPaddle, myPaddle);
+        }
+        console.log(ball.x, ball.y);
+        render();
+    }
 
     /*
      * private method: render
@@ -313,7 +341,7 @@ function PongClient() {
         initGUI();
 
         // Start drawing 
-        setInterval(function() {render();}, 1000/Pong.FRAME_RATE);
+        setInterval(function() {gameLoop();}, 1000/Pong.FRAME_RATE);
     }
 }
 
