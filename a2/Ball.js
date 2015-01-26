@@ -16,7 +16,7 @@
 "use strict"; 
 
 function Ball() {
-        // Private variables
+    // Private variables
     var moving; // boolean of whether ball is moving
     var lastUpdate; // timestamp of lastUpdate
 
@@ -25,7 +25,8 @@ function Ball() {
     this.y;     // y-coordinate of ball's position
     this.vx;    // x-component of ball's velocity
     this.vy;    // y-component of ball's 
-        this.velocityUpdated; // has the ball bounced/stopped?
+    this.velocityUpdated; // has the ball bounced?
+    this.outOfBound; // has the ball gone out of bound?
 
     // constructor
     var that = this;
@@ -34,12 +35,13 @@ function Ball() {
     this.vy = 0;
     this.x = Pong.WIDTH/2;
     this.y = Pong.HEIGHT/2;
-        this.velocityUpdated = false;
+    this.velocityUpdated = false;
+    this.outOfBound = false;
 
     /*
      * private method: updateVelocity(px)
      *
-     * Called from moveOneStep whenever the ball hits the 
+     * Called from checkForBounce whenever the ball hits the 
      * or paddle.  px is the x-position of the paddle.
      * 
      * The velocity changes depending on which region the ball
@@ -66,6 +68,17 @@ function Ball() {
     }
 
     /*
+     * priviledged method: reset()
+     */
+    this.reset = function(){
+        this.vx = 0;
+        this.vy = 0;
+        this.x = Pong.WIDTH/2;
+        this.y = Pong.HEIGHT/2;
+        moving = false;
+    }
+
+    /*
      * priviledged method: startMoving()
      *
      * Change the ball velocity to non-zero and 
@@ -74,6 +87,7 @@ function Ball() {
     this.startMoving = function(){
         that.vx = 0;
         that.vy = Ball.VERTICAL_VELOCITY;
+        that.velocityUpdated = true;
         moving = true;
         lastUpdate = getTimestamp();
     }
@@ -87,14 +101,12 @@ function Ball() {
         return moving;
     }
 
-
     /*
-     * priviledged method: moveOneStep(topPaddle, bottomPaddle)
+     * priviledged method: updatePosition()
      *
-     * Called to calculate the new position of the ball.  Update 
-     * velocity if the ball hits the paddle.
+     * Called to calculate the new position of the ball.  
      */
-    this.moveOneStep = function(topPaddle, bottomPaddle) {
+    this.updatePosition = function() {
         var now = getTimestamp(); // get the current time in millisecond resolution
         
         // Update position
@@ -102,6 +114,15 @@ function Ball() {
         that.y += that.vy*(now - lastUpdate)*Pong.FRAME_RATE/1000;
 
         lastUpdate = now;
+    }
+
+    /*
+     * priviledged method: checkForBounce(topPaddle, bottomPaddle)
+     *
+     * Called to calculate the new position of the ball.  Update 
+     * velocity if the ball hits the paddle.
+     */
+    this.checkForBounce = function(topPaddle, bottomPaddle) {
 
         // Check for bouncing
         if (that.x <= Ball.WIDTH/2 || that.x >= Pong.WIDTH - Ball.WIDTH/2) {
@@ -110,18 +131,20 @@ function Ball() {
             that.velocityUpdated = true;
         } else if (that.y + Ball.HEIGHT/2 > Pong.HEIGHT || that.y - Ball.HEIGHT/2 < 0) {
             // Goes out of bound! Lose point and restart.
-            that.x = Pong.WIDTH/2;
-            that.y = Pong.HEIGHT/2;
-            that.vx = 0;
-            that.vy = 0;
-            moving = false;
-            that.velocityUpdated = true;
+            that.reset();
+            that.outOfBound = true;
         } else if (that.y - Ball.HEIGHT/2 < Paddle.HEIGHT) {
             // Chance for ball to collide with top paddle.
             updateVelocity(topPaddle.x);
+            // Avoid collision again in the next loop
+            if (that.velocityUpdated)
+                that.y = Paddle.HEIGHT + Ball.HEIGHT/2;
         } else if (that.y + Ball.HEIGHT/2 > Pong.HEIGHT - Paddle.HEIGHT) {
             // Chance for ball to collide with bottom paddle.
             updateVelocity(bottomPaddle.x);
+            // Avoid collision again in the next loop
+            if (that.velocityUpdated)
+                that.y = Pong.HEIGHT - Paddle.HEIGHT - Ball.HEIGHT/2;
         }
     }
 
@@ -142,6 +165,8 @@ function Ball() {
         console.log("using Date.now();");
         var getTimestamp = function() { return new Date().now(); };
     }
+    // initialize the lastUpdate so that it is not a NaN
+    lastUpdate = getTimestamp();
 }
 
 // Static variables
