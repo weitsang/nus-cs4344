@@ -277,7 +277,6 @@ function PongClient() {
             // my paddle is at the bottom
             ball.checkForBounce(opponentPaddle, myPaddle);
         }
-        console.log(ball.x, ball.y);
         render();
     }
 
