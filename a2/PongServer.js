@@ -120,7 +120,8 @@ function PongServer() {
             p2.paddle.moveOneStep();
 
             // Move ball
-            ball.moveOneStep(p1.paddle, p2.paddle);
+            ball.updatePosition();
+            ball.checkForBounce(p1.paddle, p2.paddle);
 
             // Update on player side
             var bx = ball.x;
@@ -147,6 +148,29 @@ function PongServer() {
                 opponentPaddleX: p1.paddle.x,
                 opponentPaddleY: p1.paddle.y};
             setTimeout(unicast, p2.getDelay(), sockets[2], states);
+            if (ball.velocityUpdated) {
+                var bvx = ball.vx;
+                var bvy = ball.vy;
+                states = { 
+                    type: "updateVelocity",
+                    timestamp: currentTime,
+                    ballX: bx,
+                    ballY: by,
+                    ballVX: bvx,
+                    ballVY: bvy};
+                setTimeout(unicast, p1.getDelay(), sockets[1], states);
+                setTimeout(unicast, p2.getDelay(), sockets[2], states);
+                ball.velocityUpdated = false;
+            }
+            if (ball.outOfBound) {
+                states = { 
+                    type: "outOfBound",
+                    timestamp: currentTime,
+                    };
+                setTimeout(unicast, p1.getDelay(), sockets[1], states);
+                setTimeout(unicast, p2.getDelay(), sockets[2], states);
+                ball.outOfBound = false;
+            }
         } else {
             // Reset
             reset();
@@ -288,7 +312,7 @@ function PongServer() {
             console.log("Visit http://0.0.0.0:" + Pong.PORT + "/Pong.html in your " + 
                         "browser to start the game")
         } catch (e) {
-            console.log("Cannot listen to " + port);
+            console.log("Cannot listen to " + Pong.PORT);
             console.log("Error: " + e);
         }
     }
