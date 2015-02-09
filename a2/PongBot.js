@@ -27,7 +27,8 @@ function PongBot() {
     var myPaddle;       // player's paddle in game 
     var opponentPaddle; // opponent paddle in game
     var delay;          // delay simulated on current client 
-    var latestMessageSendTime = 0; // timestamp of last recv update
+    var lastUpdatePaddleAt = 0; // timestamp of last recv update
+    var lastUpdateVelocityAt = 0; // timestamp of last recv update
 
     /*
      * private method: showMessage(location, msg)
@@ -91,9 +92,9 @@ function PongBot() {
                     break;
                 case "update": 
                     var t = message.timestamp;
-                    if (t < latestMessageSendTime)
+                    if (t < lastUpdatePaddleAt)
                         break;
-                    latestMessageSendTime = t;
+                    lastUpdatePaddleAt = t;
                     //ball.x = message.ballX;
                     //ball.y = message.ballY;
                     //myPaddle.x = message.myPaddleX;
@@ -103,18 +104,20 @@ function PongBot() {
                     break;
                 case "updateVelocity": 
                     var t = message.timestamp;
-                    if (t < latestMessageSendTime)
+                    if (t < lastUpdateVelocityAt)
                         break;
-                    latestMessageSendTime = t;
+                    lastUpdateVelocityAt = t;
                     ball.vx = message.ballVX;
                     ball.vy = message.ballVY;
+                    // Periodically resync ball position to prevent error
+                    // in calculation to propagate.
+                    ball.x = message.ballX;
+                    ball.y = message.ballY;
                     break;
                 case "outOfBound": 
-                    var t = message.timestamp;
-                    if (t < latestMessageSendTime)
-                        break;
-                    latestMessageSendTime = t;
                     ball.reset();
+                    myPaddle.reset();
+                    opponentPaddle.reset();
                     break;
                 default: 
                     appendMessage("serverMsg", "unhandled meesage type " + message.type);
