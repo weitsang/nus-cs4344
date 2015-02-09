@@ -295,8 +295,9 @@ function PongServer() {
                 // When the client send something to the server.
                 conn.on('data', function (data) {
                     var message = JSON.parse(data)
+                    var p = players[conn.id]
 
-                    if (players[conn.id] === undefined) {
+                    if (p === undefined) {
                         // we received data from a connection with
                         // no corresponding player.  don't do anything.
                         return;
