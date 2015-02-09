@@ -117,6 +117,25 @@ function Ball() {
     }
 
     /*
+     * priviledged methods: isMoving<Dir>()
+     * (e.g., isMovingUp())
+     *
+     * Return true iff the ball is moving in the direction.
+     */
+    this.isMovingUp = function() {
+        return (that.vy < 0);
+    }
+    this.isMovingDown = function() {
+        return (that.vy > 0);
+    }
+    this.isMovingLeft = function() {
+        return (that.vx < 0);
+    }
+    this.isMovingRight = function() {
+        return (that.vx > 0);
+    }
+
+    /*
      * priviledged method: checkForBounce(topPaddle, bottomPaddle)
      *
      * Called to calculate the new position of the ball.  Update 
@@ -125,26 +144,21 @@ function Ball() {
     this.checkForBounce = function(topPaddle, bottomPaddle) {
 
         // Check for bouncing
-        if (that.x <= Ball.WIDTH/2 || that.x >= Pong.WIDTH - Ball.WIDTH/2) {
+        if ((that.isMovingLeft() && that.x <= Ball.WIDTH/2) || 
+            (that.isMovingRight() && that.x >= Pong.WIDTH - Ball.WIDTH/2)) {
             // Bounds off horizontally
             that.vx = -that.vx;
-            that.velocityUpdated = true;
-        } else if (that.y + Ball.HEIGHT/2 > Pong.HEIGHT || that.y - Ball.HEIGHT/2 < 0) {
+        } else if ((that.isMovingDown() && that.y + Ball.HEIGHT/2 > Pong.HEIGHT) || 
+                (that.isMovingUp() && that.y - Ball.HEIGHT/2 < 0)) {
             // Goes out of bound! Lose point and restart.
             that.reset();
             that.outOfBound = true;
-        } else if (that.y - Ball.HEIGHT/2 < Paddle.HEIGHT) {
+        } else if (that.isMovingUp() && that.y - Ball.HEIGHT/2 < Paddle.HEIGHT) {
             // Chance for ball to collide with top paddle.
             updateVelocity(topPaddle.x);
-            // Avoid collision again in the next loop
-            if (that.velocityUpdated)
-                that.y = Paddle.HEIGHT + Ball.HEIGHT/2;
-        } else if (that.y + Ball.HEIGHT/2 > Pong.HEIGHT - Paddle.HEIGHT) {
+        } else if (that.isMovingDown() && that.y + Ball.HEIGHT/2 > Pong.HEIGHT - Paddle.HEIGHT) {
             // Chance for ball to collide with bottom paddle.
             updateVelocity(bottomPaddle.x);
-            // Avoid collision again in the next loop
-            if (that.velocityUpdated)
-                that.y = Pong.HEIGHT - Paddle.HEIGHT - Ball.HEIGHT/2;
         }
     }
 
