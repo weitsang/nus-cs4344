@@ -105,6 +105,10 @@ function PongClient() {
                     lastUpdateVelocityAt = t;
                     ball.vx = message.ballVX;
                     ball.vy = message.ballVY;
+                    // Periodically resync ball position to prevent error
+                    // in calculation to propagate.
+                    ball.x = message.ballX;
+                    ball.y = message.ballY;
                     break;
                 case "outOfBound": 
                     ball.reset();
