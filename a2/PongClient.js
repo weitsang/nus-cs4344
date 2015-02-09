@@ -65,6 +65,9 @@ function PongClient() {
      * a string.
      */
     var sendToServer = function (msg) {
+        var date = new Date();
+        var currentTime = date.getTime();
+        msg["timestamp"] = currentTime;
         socket.send(JSON.stringify(msg));
     }
 
