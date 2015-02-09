@@ -17,12 +17,14 @@ function Player(sid, pid, yPos) {
     this.pid;   // Player id. In this case, 1 or 2 
     this.paddle;// player's paddle object 
     this.delay; // player's delay 
+    this.lastUpdated; // timestamp of last paddle update
 
     // Constructor
     this.sid = sid;
     this.pid = pid;
     this.paddle = new Paddle(yPos);
     this.delay = 0;
+    this.lastUpdated = new Date().getTime();
 
     /*
      * priviledge method: getDelay
