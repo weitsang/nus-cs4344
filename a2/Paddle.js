@@ -70,6 +70,16 @@ Paddle.prototype.accelerate = function(newvx) {
 }
 
 /*
+ * public method: reset()
+ *
+ * Reset the position of paddle
+ */
+Paddle.prototype.reset = function() {
+	this.x = Pong.WIDTH/2;
+    this.vx = 0; 
+}
+
+/*
  * public method: isAtTop()
  * public method: isAtBottom()
  *
