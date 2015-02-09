@@ -59,6 +59,38 @@ function PongServer() {
     }
 
     /*
+     * private method: movePaddle(player, x, time)
+     *
+     * move the paddle owned by player at connection ID connId to
+     * position x, if x is received in order.
+     */
+    var movePaddle = function (connId, x, time) {
+        if (players[connId] !== undefined) {
+            if (time > players[connId].lastUpdated) {
+                players[connId].lastUpdated = time;
+                players[connId].paddle.move(x);
+            }
+        }
+    }
+
+    /*
+     * private method: acceleratePaddle(player, vx, time)
+     * 
+     * accelerate the paddle owned by player at connection ID connId to
+     * velocity vx, if vx is received in order.
+     */
+    var acceleratePaddle = function (connId, vx, time) {
+        if (players[connId] !== undefined) {
+            if (time > players[connId].lastUpdated) {
+                players[connId].lastUpdated = time;
+                players[connId].paddle.accelerate(vx);
+            }
+        }
+    }
+
+
+
+    /*
      * private method: reset()
      *
      * Reset the game to its initial state.  Clean up
@@ -277,18 +309,12 @@ function PongServer() {
 
                         // one of the player moves the mouse.
                         case "move":
-                            setTimeout(function() {
-                                players[conn.id].paddle.move(message.x);
-                            },
-                            players[conn.id].getDelay());
+                            setTimeout(movePaddle, p.getDelay(), conn.id, message.x, message.timestamp);
                             break;
                             
                         // one of the player moves the mouse.
                         case "accelerate":
-                            setTimeout(function() {
-                                players[conn.id].paddle.accelerate(message.vx);
-                            },
-                            players[conn.id].getDelay());
+                            setTimeout(acceleratePaddle, p.getDelay(), conn.id, message.vx, message.timestamp);
                             break;
 
                         // one of the player change the delay
