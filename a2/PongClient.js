@@ -24,7 +24,8 @@ function PongClient() {
     var opponentPaddle; // opponent paddle in game
     var delay;          // delay simulated on current client 
     var prevVx = 0;     // previous velocity (for accelorometer)
-    var latestMessageSendTime = 0; // timestamp of last recv update
+    var lastUpdatePaddleAt = 0; // timestamp of last recv update
+    var lastUpdateVelocityAt = 0; // timestamp of last recv update
 
     /*
      * private method: showMessage(location, msg)
@@ -85,9 +86,9 @@ function PongClient() {
                     break;
                 case "update": 
                     var t = message.timestamp;
-                    if (t < latestMessageSendTime)
+                    if (t < lastUpdatePaddleAt)
                         break;
-                    latestMessageSendTime = t;
+                    lastUpdatePaddleAt = t;
                     // ball.x = message.ballX;
                     // ball.y = message.ballY;
                     // Stop updating own's paddle based on server's state
@@ -99,18 +100,16 @@ function PongClient() {
                     break;
                 case "updateVelocity": 
                     var t = message.timestamp;
-                    if (t < latestMessageSendTime)
+                    if (t < lastUpdateVelocityAt)
                         break;
-                    latestMessageSendTime = t;
+                    lastUpdateVelocityAt = t;
                     ball.vx = message.ballVX;
                     ball.vy = message.ballVY;
                     break;
                 case "outOfBound": 
-                    var t = message.timestamp;
-                    if (t < latestMessageSendTime)
-                        break;
-                    latestMessageSendTime = t;
                     ball.reset();
+                    myPaddle.reset();
+                    opponentPaddle.reset();
                     break;
                 default: 
                     appendMessage("serverMsg", "unhandled meesage type " + message.type);
