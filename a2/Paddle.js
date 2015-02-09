@@ -69,6 +69,20 @@ Paddle.prototype.accelerate = function(newvx) {
 	this.vx = newvx;
 }
 
+/*
+ * public method: isAtTop()
+ * public method: isAtBottom()
+ *
+ * Return true iff the paddle is at the top (and bottom) respectively
+ */
+Paddle.prototype.isAtTop = function() {
+	return (this.y < Pong.HEIGHT/2);
+}
+Paddle.prototype.isAtBottom = function() {
+	return (this.y > Pong.HEIGHT/2);
+}
+
+
 // For node.js require
 global.Paddle = Paddle;
 
