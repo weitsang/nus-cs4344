@@ -1,0 +1,17 @@
+{
+  "name": "NUS-CS4344",
+  "version": "0.1.0",
+  "description": "CS4344 Pong Game",
+  "homepage": "https://github.com/weitsang/nus-cs4344",
+  "author": {
+    "name": "Ooi Wei Tsang"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/weitsang/nus-cs4344"
+  },
+  "dependencies": {
+    "express": "4.11.0",
+    "sockjs": "0.3.12"
+  }
+}
