@@ -7,7 +7,7 @@
  *   node Bot.js <n>
  *
  * where <n> is the number of bots.  The default server can scale
- * <n> up to about 150 on my laptop.  If argument <n> is not 
+ * <n> up to at least 500 on my laptop.  If argument <n> is not 
  * provided, only one Bot will be created.
  */
 "use strict"; 
@@ -30,7 +30,7 @@ function Bot() {
      * a string.
      */
     var sendToServer = function (msg) {
-      sock.send(JSON.stringify(msg));
+        sock.send(JSON.stringify(msg));
     }
 
     /*
@@ -131,9 +131,11 @@ if (process.argv[2] == undefined) {
 } else {
     numberOfBots = parseInt(process.argv[2]);
 }
+// Create the bots.  We space out the creation
+// to give the server some breathing space.
 for (var i = 0; i < numberOfBots; i++) {
-    var b = new Bot();
-    b.run()
+    setTimeout(function() {
+        var b = new Bot(); b.run();}, i*200);
 }
 
 // vim:ts=4:sw=4:expandtab
