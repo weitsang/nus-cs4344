@@ -11,6 +11,7 @@
     "url": "git://github.com/weitsang/nus-cs4344"
   },
   "dependencies": {
+    "ws": "0.7.1",
     "express": "4.11.0",
     "sockjs": "0.3.12"
   }
