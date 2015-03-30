@@ -184,6 +184,9 @@ function Client() {
                     y: myShip.y, 
                     dir: myShip.dir});
             }
+            if ((e.keyCode >= 37 && e.keyCode <= 40) || e.keyCode == 32) {
+                e.preventDefault();
+            }
         }, false);
 
     }
