@@ -15,7 +15,7 @@
 var LIB_PATH = "./";
 require(LIB_PATH + "Config.js");
 require(LIB_PATH + "Ship.js");
-require(LIB_PATH + "Player.js");
+require(LIB_PATH + "Rocket.js");
 
 function Bot() {
     var sock;
