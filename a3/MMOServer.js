@@ -1,26 +1,23 @@
 /*
  * MMOServer.js
- * A skeleton server for massively multiplayer space war.
+ * A skeleton server for massively multiplayer space battle.
  * Assignment 3 for CS4344, AY2013/14.
  *
  * Usage: 
  *   node MMOServer.js
  */
 
-// enforce strict/clean programming
 "use strict"; 
 
 var LIB_PATH = "./";
 require(LIB_PATH + "Config.js");
 require(LIB_PATH + "Ship.js");
+require(LIB_PATH + "Rocket.js");
 require(LIB_PATH + "Player.js");
 
 function MMOServer() {
-    // Private Variables
-    var port;         // Game port 
-    var count;        // Keeps track how many people are connected to server 
-    var nextPID = 0;  // PID to assign to next connected player (i.e. which player slot is open) 
-    var gameInterval; // Interval variable used for gameLoop 
+    // private Variables
+    var nextPID = 0;  // PID to assign to next connected player 
     var ships = {};   // Associative array for ships, indexed via player ID
     var rockets = {}; // Associative array for ships, indexed via player ID
     var sockets = {}; // Associative array for sockets, indexed via player ID
@@ -98,14 +95,23 @@ function MMOServer() {
         }
         for (i in rockets) {
             rockets[i].moveOneStep();
-            for (j in ships) {
-                if (rockets[i] != undefined && rockets[i].from != j) {
-                    if (rockets[i].hit(ships[j])) {
-                        console.log("HIT " + i + " " + j);
-                        broadcast({type:"hit", rocket:i, ship:j})
-                        delete rockets[i];
-                    }
-                } 
+            // remove out of bounds rocket
+            if (rockets[i].x < 0 || rockets[i].x > Config.WIDTH ||
+                rockets[i].y < 0 || rockets[i].y > Config.HEIGHT) {
+                rockets[i] = null;
+                delete rockets[i];
+            } else {
+                // For each ship, checks if this rocket has hit the ship
+                // A rocket cannot hit its own ship.
+                for (j in ships) {
+                    if (rockets[i] != undefined && rockets[i].from != j) {
+                        if (rockets[i].hasHit(ships[j])) {
+                            // tell everyone there is a hit
+                            broadcast({type:"hit", rocket:i, ship:j})
+                            delete rockets[i];
+                        }
+                    } 
+                }
             }
         }
     }
@@ -126,27 +132,23 @@ function MMOServer() {
 
             // Upon connection established from a client socket
             sock.on('connection', function (conn) {
-                //broadcast({
-                //   type:"message", 
-                //  content:"There is now " + count + " players"}
-                //  );
                 newPlayer(conn);
 
                 // When the client closes the connection to the 
                 // server/closes the window
                 conn.on('close', function () {
-                    // Decrease player counter
-                    count--;
                     var pid = players[conn.id].pid;
                     delete ships[pid];
                     delete players[conn.id];
+                    broadcastUnless({
+                        type: "delete", 
+                        id: pid}, pid)
                 });
 
                 // When the client send something to the server.
                 conn.on('data', function (data) {
                     var message = JSON.parse(data)
                     var p = players[conn.id];
-
                     if (p === undefined) {
                         // we received data from a connection with
                         // no corresponding player.  don't do anything.
@@ -155,18 +157,41 @@ function MMOServer() {
                     } 
                     switch (message.type) {
                         case "join":
+                            // A client has requested to join. 
+                            // Initialize a ship at random position
+                            // and tell everyone.
                             var pid = players[conn.id].pid;
+                            var x = Math.floor(Math.random()*Config.WIDTH);
+                            var y = Math.floor(Math.random()*Config.HEIGHT);
+                            var dir;
+                            var dice = Math.random();
+                            // pick a dir with equal probability
+                            if (dice < 0.25) {
+                                dir = "right";
+                            } else if (dice < 0.5) {
+                                dir = "left";
+                            } else if (dice < 0.75) {
+                                dir = "up";
+                            } else {
+                                dir = "down";
+                            }
                             ships[pid] = new Ship();
-                            ships[pid].init(Config.WIDTH/2, Config.HEIGHT/2,"up");
+                            ships[pid].init(x, y, dir);
                             broadcastUnless({
                                 type: "new", 
                                 id: pid, 
-                                x: Config.WIDTH/2, 
-                                y: Config.HEIGHT/2, 
-                                dir: "up"}, pid)
-                            unicast(sockets[pid], {type:"join",id:pid});   
+                                x: x,
+                                y: y,
+                                dir: dir}, pid)
+                            unicast(sockets[pid], {
+                                type: "join",
+                                id: pid,
+                                x: x,
+                                y: y,
+                                dir: dir});   
+                            
+                            // Tell this new guy who else is in the game.
                             for (var i in ships) {
-                                console.log(i, ships[i].x);
                                 if (i != pid) {
                                     if (ships[i] !== undefined) {
                                         unicast(sockets[pid], {
@@ -179,19 +204,25 @@ function MMOServer() {
                                 }
                             }
                             break;
+
                         case "turn":
+                            // A player has turned.  Tell everyone else.
                             var pid = players[conn.id].pid;
                             ships[pid].jumpTo(message.x, message.y);
                             ships[pid].turn(message.dir);
-                            broadcast({
+                            broadcastUnless({
                                 type:"turn",
                                 id: pid,
                                 x: message.x, 
                                 y: message.y, 
                                 dir: message.dir
-                            });
+                            }, pid);
                             break;
+
                         case "fire":
+                            // A player has asked to fire a rocket.  Create
+                            // a rocket, and tell everyone (including the player, 
+                            // so that it knows the rocket ID).
                             var pid = players[conn.id].pid;
                             var r = new Rocket();
                             r.init(message.x, message.y, message.dir, pid);
@@ -213,6 +244,7 @@ function MMOServer() {
                 }); // conn.on("data"
             }); // socket.on("connection"
 
+            // cal the game loop
             setInterval(function() {gameLoop();}, 1000/Config.FRAME_RATE); 
 
             // Standard code to start the server and listen
@@ -220,13 +252,13 @@ function MMOServer() {
             var app = express();
             var httpServer = http.createServer(app);
             sock.installHandlers(httpServer, {prefix:'/space'});
-            httpServer.listen(4344, '0.0.0.0');
+            httpServer.listen(Config.PORT, Config.SERVER_NAME);
             app.use(express.static(__dirname));
-            console.log("Server running on http://0.0.0.0:" + 4344 + "\n")
-            console.log("Visit http://0.0.0.0:" + 4344 + "/index.html in your " + 
-                        "browser to start the game")
+            console.log("Server running on http://" + Config.SERVER_NAME + 
+                    ":" + Config.PORT + "\n")
+            console.log("Visit http://" + Config.SERVER_NAME + ":" + Config.PORT + "/index.html in your browser to start the game")
         } catch (e) {
-            console.log("Cannot listen to " + 4344);
+            console.log("Cannot listen to " + Config.PORT);
             console.log("Error: " + e);
         }
     }
