@@ -6,6 +6,7 @@
  * Usage: 
  *    require(LIB_PATH + "Ship.js");
  */
+"use strict"; 
 function Ship()
 {
 	// public:
