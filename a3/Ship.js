@@ -115,12 +115,15 @@ function Rocket()
 	}
 
 	// c is the HTML canvas context for drawing.
-	this.draw = function(c)
+	this.draw = function(c, isSelf)
 	{
 		try {
 			var rx = Math.round(this.x);
 			var ry = Math.round(this.y);
-			c.fillStyle = "#eee";
+			if (isSelf == true)
+				c.fillStyle = "#ff0";
+			else
+				c.fillStyle = "#eee";
 			c.beginPath();
 			c.arc(rx,ry,2,0,2*Math.PI);
 			c.closePath();
