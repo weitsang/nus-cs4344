@@ -79,7 +79,7 @@ function Client() {
                     } 
                     var r = new Rocket();
                     r.init(message.x, message.y, message.dir, sid);
-                    rockets[rid.rocket] = r;
+                    rockets[rid] = r;
                     break;
                 case "hit":
                     // Rocket rid just hit Ship rid
