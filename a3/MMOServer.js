@@ -19,7 +19,7 @@ function MMOServer() {
     // private Variables
     var nextPID = 0;  // PID to assign to next connected player 
     var ships = {};   // Associative array for ships, indexed via player ID
-    var rockets = {}; // Associative array for ships, indexed via player ID
+    var rockets = {}; // Associative array for rockets, indexed via timestamp
     var sockets = {}; // Associative array for sockets, indexed via player ID
     var players = {}; // Associative array for players, indexed via socket ID
 
