@@ -114,6 +114,7 @@ function Client() {
                     } else {
                         delete ships[id];
                     }
+                    break;
                 default:
                     console.log("error: undefined command " + message.type);
             }
