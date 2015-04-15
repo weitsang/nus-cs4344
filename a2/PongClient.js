@@ -26,6 +26,7 @@ function PongClient() {
     var prevVx = 0;     // previous velocity (for accelorometer)
     var lastUpdatePaddleAt = 0; // timestamp of last recv update
     var lastUpdateVelocityAt = 0; // timestamp of last recv update
+    var shadow, showShadow;  // shadow ball and paddle showing server's state
 
     /*
      * private method: showMessage(location, msg)
@@ -86,6 +87,9 @@ function PongClient() {
                 switch (message.type) {
                 case "message": 
                     appendMessage("serverMsg", message.content);
+                    break;
+                case "shadow": 
+                    shadow = message;
                     break;
                 case "update": 
                     var t = message.timestamp;
@@ -271,6 +275,13 @@ function PongClient() {
                 }
                 break;
             }
+            case 83: { // s
+                if (showShadow) 
+                    showShadow = false;
+                else
+                    showShadow = true;
+                break;
+            }
         }
     }
     
@@ -302,6 +313,19 @@ function PongClient() {
         // Draw playArea border
         context.fillStyle = "#000000";
         context.fillRect(0, 0, playArea.width, playArea.height);
+
+        if (showShadow) {
+            // Draw the shadows
+            context.fillStyle = "#666666";
+            context.beginPath();
+            context.arc(shadow.ballX, shadow.ballY, Ball.WIDTH/2, 0, Math.PI*2, true);
+            context.closePath();
+            context.fill();
+            context.fillRect(shadow.myPaddleX - Paddle.WIDTH/2, 
+                shadow.myPaddleY - Paddle.HEIGHT/2, Paddle.WIDTH, Paddle.HEIGHT);
+            context.fillRect(shadow.opponentPaddleX - Paddle.WIDTH/2, 
+                shadow.opponentPaddleY - Paddle.HEIGHT/2, Paddle.WIDTH, Paddle.HEIGHT);
+        }
 
         // Draw the ball
         context.fillStyle = "#ffffff";

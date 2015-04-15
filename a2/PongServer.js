@@ -170,6 +170,15 @@ function PongServer() {
                 opponentPaddleX: p2.paddle.x,
                 opponentPaddleY: p2.paddle.y};
             setTimeout(unicast, p1.getDelay(), sockets[1], states);
+            unicast(sockets[1], { 
+                type: "shadow",
+                ballX: bx,
+                ballY: by,
+                myPaddleX: p1.paddle.x,
+                myPaddleY: p1.paddle.y,
+                opponentPaddleX: p2.paddle.x,
+                opponentPaddleY: p2.paddle.y}
+            );
             states = { 
                 type: "update",
                 timestamp: currentTime,
@@ -180,6 +189,15 @@ function PongServer() {
                 opponentPaddleX: p1.paddle.x,
                 opponentPaddleY: p1.paddle.y};
             setTimeout(unicast, p2.getDelay(), sockets[2], states);
+            unicast(sockets[2], { 
+                type: "shadow",
+                ballX: bx,
+                ballY: by,
+                myPaddleX: p2.paddle.x,
+                myPaddleY: p2.paddle.y,
+                opponentPaddleX: p1.paddle.x,
+                opponentPaddleY: p1.paddle.y}
+            );
             if (ball.velocityUpdated) {
                 var bvx = ball.vx;
                 var bvy = ball.vy;
